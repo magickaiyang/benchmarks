@@ -51,24 +51,24 @@ typedef unsigned long long u64Int;
 
 void sort_data (u64Int *source, u64Int *nomatch, u64Int *match, int number, 
 		int *nnomatch, int *nmatch, int mask_shift);
-inline update_table (u64Int *data, u64Int *table, int number, int nlocalm1);
+inline void update_table (u64Int *data, u64Int *table, int number, int nlocalm1);
 u64Int HPCC_starts(s64Int n);
 
 int main(int narg, char **arg)
 {
   int me,nprocs;
-  int i,j,k,iterate,niterate;
-  int nlocal,nlocalm1,logtable,index,logtablelocal;
+  int j,k,iterate,niterate;
+  int nlocalm1,logtable,logtablelocal;
   int logprocs,ipartner,ndata,nsend,nkeep,nkept,nrecv;
   int maxndata,maxnfinal,nexcess;
   int nbad;
   double t0,t0_all,Gups;
-  u64Int *table,*data,*send, *keep_data;
+  u64Int *table,*data,*send;
 #ifndef USE_BLOCKING_SEND
   u64Int *send1,*send2;
 #endif
   u64Int *recv[PITER][MAXLOGPROCS];
-  u64Int ran,datum,procmask,nglobal,offset,nupdates;
+  u64Int ran,procmask,nglobal,offset,nupdates,nlocal,i;
   u64Int ilong,nexcess_long,nbad_long;
   MPI_Status status;
   MPI_Request request[PITER][MAXLOGPROCS];
@@ -120,7 +120,7 @@ int main(int narg, char **arg)
   data = (u64Int *) malloc(CHUNKBIG*sizeof(u64Int));
 
   if (!table || !data) {
-    if (me == 0) printf("Table allocation failed\n");
+    if (me == 0) printf("Table allocation failed at %d\n", __LINE__);
     MPI_Abort(MPI_COMM_WORLD,1);
   }
 
@@ -349,7 +349,7 @@ void sort_data(u64Int *source, u64Int *nomatch, u64Int *match, int number,
   *nmatch = counts[1];
 }
 
-inline update_table(u64Int *data, u64Int *table, int number, int nlocalm1)
+inline void update_table(u64Int *data, u64Int *table, int number, int nlocalm1)
 {
 /* DEEP_UNROLL doesn't seem to improve anything at this time */
 /* Manual unrolling is a significant win if -Msafeptr is used -KDU */
