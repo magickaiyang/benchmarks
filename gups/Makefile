@@ -1,7 +1,5 @@
 CC =		mpicc	
-CCFLAGS =	-Wall -Wextra -O2 -g -DCHECK
-LINK =		mpicc
-LINKFLAGS =	-Wall -Wextra -O2 -g 
+CCFLAGS =	-I../include -Wall -Wextra -O2 -g -DCHECK
 
 .PHONY: all
 
@@ -10,12 +8,6 @@ all: gups_opt ;
 clean:
 	rm -f gups_opt *.o
 
-# Link target
+gups_opt:	gups_opt.c
+	$(CC) $(CCFLAGS) gups_opt.c -o gups_opt
 
-gups_opt:	gups_opt.o
-	$(LINK) $(LINKFLAGS) gups_opt.o -o gups_opt
-
-# Compilation rules
-
-%.o:%.c
-	$(CC) $(CCFLAGS) -c $<

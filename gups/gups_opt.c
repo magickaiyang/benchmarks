@@ -15,6 +15,11 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "mpi.h"
+#include "magicops.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
@@ -51,11 +56,98 @@ typedef unsigned long long u64Int;
 
 void sort_data (u64Int *source, u64Int *nomatch, u64Int *match, int number, 
 		int *nnomatch, int *nmatch, int mask_shift);
-inline void update_table (u64Int *data, u64Int *table, int number, int nlocalm1);
 u64Int HPCC_starts(s64Int n);
+
+static inline void update_table(u64Int *data, u64Int *table, int number, int nlocalm1)
+{
+/* DEEP_UNROLL doesn't seem to improve anything at this time */
+/* Manual unrolling is a significant win if -Msafeptr is used -KDU */
+#ifdef DEEP_UNROLL
+  int div_num = number / 16;
+  int loop_total = div_num * 16;
+#else
+  int div_num = number / 8;
+  int loop_total = div_num * 8;
+#endif
+
+  int i;
+  for (i = 0; i < div_num; i++) {
+#ifdef DEEP_UNROLL
+    const int dindex = i*16;
+#else
+    const int dindex = i*8;
+#endif
+    u64Int index0 = data[dindex] & nlocalm1;
+    u64Int index1 = data[dindex+1] & nlocalm1;
+    u64Int index2 = data[dindex+2] & nlocalm1;
+    u64Int index3 = data[dindex+3] & nlocalm1;
+    u64Int index4 = data[dindex+4] & nlocalm1;
+    u64Int index5 = data[dindex+5] & nlocalm1;
+    u64Int index6 = data[dindex+6] & nlocalm1;
+    u64Int index7 = data[dindex+7] & nlocalm1;
+    u64Int ltable0 = table[index0];
+    u64Int ltable1 = table[index1];
+    u64Int ltable2 = table[index2];
+    u64Int ltable3 = table[index3];
+    u64Int ltable4 = table[index4];
+    u64Int ltable5 = table[index5];
+    u64Int ltable6 = table[index6];
+    u64Int ltable7 = table[index7];
+#ifdef DEEP_UNROLL
+    u64Int index8 = data[dindex+8] & nlocalm1;
+    u64Int index9 = data[dindex+9] & nlocalm1;
+    u64Int index10 = data[dindex+10] & nlocalm1;
+    u64Int index11 = data[dindex+11] & nlocalm1;
+    u64Int index12 = data[dindex+12] & nlocalm1;
+    u64Int index13 = data[dindex+13] & nlocalm1;
+    u64Int index14 = data[dindex+14] & nlocalm1;
+    u64Int index15 = data[dindex+15] & nlocalm1;
+    u64Int ltable8 = table[index8];
+    u64Int ltable9 = table[index9];
+    u64Int ltable10 = table[index10];
+    u64Int ltable11 = table[index11];
+    u64Int ltable12 = table[index12];
+    u64Int ltable13 = table[index13];
+    u64Int ltable14 = table[index14];
+    u64Int ltable15 = table[index15];
+#endif
+    table[index0] = ltable0 ^ data[dindex];
+    table[index1] = ltable1 ^ data[dindex+1];
+    table[index2] = ltable2 ^ data[dindex+2];
+    table[index3] = ltable3 ^ data[dindex+3];
+    table[index4] = ltable4 ^ data[dindex+4];
+    table[index5] = ltable5 ^ data[dindex+5];
+    table[index6] = ltable6 ^ data[dindex+6];
+    table[index7] = ltable7 ^ data[dindex+7];
+#ifdef DEEP_UNROLL
+    table[index8] = ltable8 ^ data[dindex+8];
+    table[index9] = ltable9 ^ data[dindex+9];
+    table[index10] = ltable10 ^ data[dindex+10];
+    table[index11] = ltable11 ^ data[dindex+11];
+    table[index12] = ltable12 ^ data[dindex+12];
+    table[index13] = ltable13 ^ data[dindex+13];
+    table[index14] = ltable14 ^ data[dindex+14];
+    table[index15] = ltable15 ^ data[dindex+15];
+#endif
+  }
+
+  for (i = loop_total; i < number; i++) {
+    u64Int datum = data[i];
+    int index = datum & nlocalm1;
+    table[index] ^= datum;
+  }
+}
 
 int main(int narg, char **arg)
 {
+  int fd, bytes_written;
+  fd = open("/proc/self/sim_target", O_WRONLY);
+  bytes_written = write(fd, "1", 1);
+  close(fd);
+  printf("%d bytes written\n", bytes_written);
+
+  zsim_magic_op_start_sim();
+
   int me,nprocs;
   int j,k,iterate,niterate;
   int nlocalm1,logtable,logtablelocal;
@@ -296,6 +388,9 @@ int main(int narg, char **arg)
   free(send1);
   free(send2);
 #endif
+
+  zsim_magic_op_end_sim();
+
   MPI_Finalize();
 }
 
@@ -347,86 +442,6 @@ void sort_data(u64Int *source, u64Int *nomatch, u64Int *match, int number,
   
   *nnomatch = counts[0];
   *nmatch = counts[1];
-}
-
-inline void update_table(u64Int *data, u64Int *table, int number, int nlocalm1)
-{
-/* DEEP_UNROLL doesn't seem to improve anything at this time */
-/* Manual unrolling is a significant win if -Msafeptr is used -KDU */
-#ifdef DEEP_UNROLL
-  int div_num = number / 16;
-  int loop_total = div_num * 16;
-#else
-  int div_num = number / 8;
-  int loop_total = div_num * 8;
-#endif
-
-  int i;
-  for (i = 0; i < div_num; i++) {
-#ifdef DEEP_UNROLL
-    const int dindex = i*16;
-#else
-    const int dindex = i*8;
-#endif
-    u64Int index0 = data[dindex] & nlocalm1;
-    u64Int index1 = data[dindex+1] & nlocalm1;
-    u64Int index2 = data[dindex+2] & nlocalm1;
-    u64Int index3 = data[dindex+3] & nlocalm1;
-    u64Int index4 = data[dindex+4] & nlocalm1;
-    u64Int index5 = data[dindex+5] & nlocalm1;
-    u64Int index6 = data[dindex+6] & nlocalm1;
-    u64Int index7 = data[dindex+7] & nlocalm1;
-    u64Int ltable0 = table[index0];
-    u64Int ltable1 = table[index1];
-    u64Int ltable2 = table[index2];
-    u64Int ltable3 = table[index3];
-    u64Int ltable4 = table[index4];
-    u64Int ltable5 = table[index5];
-    u64Int ltable6 = table[index6];
-    u64Int ltable7 = table[index7];
-#ifdef DEEP_UNROLL
-    u64Int index8 = data[dindex+8] & nlocalm1;
-    u64Int index9 = data[dindex+9] & nlocalm1;
-    u64Int index10 = data[dindex+10] & nlocalm1;
-    u64Int index11 = data[dindex+11] & nlocalm1;
-    u64Int index12 = data[dindex+12] & nlocalm1;
-    u64Int index13 = data[dindex+13] & nlocalm1;
-    u64Int index14 = data[dindex+14] & nlocalm1;
-    u64Int index15 = data[dindex+15] & nlocalm1;
-    u64Int ltable8 = table[index8];
-    u64Int ltable9 = table[index9];
-    u64Int ltable10 = table[index10];
-    u64Int ltable11 = table[index11];
-    u64Int ltable12 = table[index12];
-    u64Int ltable13 = table[index13];
-    u64Int ltable14 = table[index14];
-    u64Int ltable15 = table[index15];
-#endif
-    table[index0] = ltable0 ^ data[dindex];
-    table[index1] = ltable1 ^ data[dindex+1];
-    table[index2] = ltable2 ^ data[dindex+2];
-    table[index3] = ltable3 ^ data[dindex+3];
-    table[index4] = ltable4 ^ data[dindex+4];
-    table[index5] = ltable5 ^ data[dindex+5];
-    table[index6] = ltable6 ^ data[dindex+6];
-    table[index7] = ltable7 ^ data[dindex+7];
-#ifdef DEEP_UNROLL
-    table[index8] = ltable8 ^ data[dindex+8];
-    table[index9] = ltable9 ^ data[dindex+9];
-    table[index10] = ltable10 ^ data[dindex+10];
-    table[index11] = ltable11 ^ data[dindex+11];
-    table[index12] = ltable12 ^ data[dindex+12];
-    table[index13] = ltable13 ^ data[dindex+13];
-    table[index14] = ltable14 ^ data[dindex+14];
-    table[index15] = ltable15 ^ data[dindex+15];
-#endif
-  }
-
-  for (i = loop_total; i < number; i++) {
-    u64Int datum = data[i];
-    int index = datum & nlocalm1;
-    table[index] ^= datum;
-  }
 }
 
 /* start random number generator at Nth step of stream
