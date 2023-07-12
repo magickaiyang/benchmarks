@@ -24,6 +24,10 @@ Copyright (c) 2006-2010 LBW.
 #include "mcf.h"
 #include "time.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "../include/magicops.h"
 
 #define REPORT
@@ -141,6 +145,11 @@ int main( argc, argv )
   time(&startTime);
 #endif
 
+  int fd, bytes_written;
+  fd = open("/proc/self/sim_target", O_WRONLY);
+  bytes_written = write(fd, "1", 1);
+  close(fd);
+  printf("%d bytes written\n", bytes_written);
   zsim_magic_op_start_sim();
   
   printf( "\nMCF SPEC CPU version 1.11\n" );

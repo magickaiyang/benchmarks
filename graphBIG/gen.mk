@@ -10,13 +10,10 @@ HELPDIRS=$(word 1, ${SUBDIR})
 
 default: all
 
-all: pfm_cxx ${BUILDDIRS} 
+all: ${BUILDDIRS} 
 
 ${BUILDDIRS}:
 	@${MAKE} -C $(@:build-%=%) all
-
-pfm_cxx: 
-	@${MAKE} --no-print-directory -C ${ROOT}/tools all
 
 clean: ${CLEANDIRS}
 	@rm -f output.log
@@ -25,7 +22,7 @@ ${CLEANDIRS}:
 	@${MAKE} -C $(@:clean-%=%) clean
 
 
-run: pfm_cxx ${RUNDIRS} 
+run: ${RUNDIRS} 
 	@rm -f output.log
 	@for d in ${SUBDIR}; do \
 		cat $$d/output.log >> output.log; \
@@ -36,12 +33,12 @@ ${RUNDIRS}:
 
 
 
-verify: pfm_cxx ${TESTDIRS}
+verify: ${TESTDIRS}
 
 ${TESTDIRS}:
 	@${MAKE} -s -C $(@:test-%=%) verify
 
-travis-verify: pfm_cxx ${TRAVIS_DIR:%=test-%}
+travis-verify: ${TRAVIS_DIR:%=test-%}
 
 
 
@@ -57,5 +54,5 @@ ${HELPDIRS}:
 .PHONY: subdirs $(HELPDIRS)
 .PHONY: subdirs $(TESTDIRS)
 .PHONY: subdirs $(CLEANDIRS)
-.PHONY: all run clean verify pfm_cxx
+.PHONY: all run clean verify
 

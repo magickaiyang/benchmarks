@@ -19,12 +19,13 @@ int main(int argc, char *argv[])
     std::default_random_engine generator;
     std::uniform_int_distribution<uint64_t> distribution(min,max-1);
 
-    cout<<"## NUM-"<<num<<" MAX-"<<max<<endl;
+    cout<<"edge1|edge2"<<endl;
 
     for (uint64_t i=0;i<num;i++)
     {
-        uint64_t outcome = distribution(generator);
-        cout<<outcome<<"\n";
+        uint64_t outcome1 = distribution(generator);
+        uint64_t outcome2 = distribution(generator);
+        cout << outcome1 << "|" << outcome2 << "\n";
     }
     return 0;
 }

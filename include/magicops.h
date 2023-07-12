@@ -1,3 +1,10 @@
+#pragma once
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 typedef unsigned long uint64_t;
 
 enum {
@@ -128,4 +135,20 @@ static inline void zsim_magic_op_end_copy(void)
 	op.op = ZSIM_MAGIC_OP_END_COPY;
 	zsim_magic_op(&op);
 	return;
+}
+
+static void start_sim_notify_os(void) {
+	int fd, bytes_written;
+	fd = open("/proc/self/sim_target", O_WRONLY);
+	bytes_written = write(fd, "1", 1);
+	close(fd);
+	printf("%d bytes written\n", bytes_written);
+
+	zsim_magic_op_start_sim();
+	printf("start sim magic op issued\n");
+}
+
+static void end_sim(void) {
+	zsim_magic_op_end_sim();
+	printf("end sim magic op issued\n");
 }

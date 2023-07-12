@@ -1,11 +1,6 @@
-SUBDIR=benchmark \
-	   csr_bench \
-	   gpu_bench
+SUBDIR=benchmark 
 
 ROOT=./
-
-TRAVIS_DIR=benchmark \
-		   csr_bench
 
 include ${ROOT}/gen.mk
 

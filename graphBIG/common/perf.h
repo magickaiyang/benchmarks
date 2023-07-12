@@ -14,9 +14,7 @@
 #include <cstring>
 #include <string.h>
 
-#ifndef NO_PFM
-#include "pfm_cxx.h"
-#endif
+#include "../../include/magicops.h"
 
 #define DEFAULT_PERF_GRP_SZ 4
 
@@ -395,6 +393,8 @@ public:
             if (_multiplexing_vec[i]) std::cout<<"\tMUX";
             std::cout<<std::endl;
         }
+
+	end_sim();
     }
     
     unsigned long long event_counter(size_t id)
@@ -715,6 +715,8 @@ public:
             if (mux) std::cout<<"\tMUX";
             std::cout<<std::endl;
         }
+
+	end_sim();
     }
 protected:
     std::vector<gBenchPerf_event> _perf_vec;

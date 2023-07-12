@@ -2,4 +2,4 @@
 set -e
 set -x
 
-benchmark/bench_connectedComp/connectedcomponent --dataset /home/kaiyang/graphbig-dataset/twitter --separator " "
+benchmark/bench_DFS/dfs --dataset dataset/medium
