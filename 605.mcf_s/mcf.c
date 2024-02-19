@@ -150,7 +150,6 @@ int main( argc, argv )
   bytes_written = write(fd, "1", 1);
   close(fd);
   printf("%d bytes written\n", bytes_written);
-  zsim_magic_op_start_sim();
   
   printf( "\nMCF SPEC CPU version 1.11\n" );
   printf( "Copyright (c) 1998-2000 Zuse Institut Berlin (ZIB)\n" );
@@ -194,6 +193,8 @@ int main( argc, argv )
 #endif
   
   
+  printf("SST: start simulation\n");
+  zsim_magic_op_start_sim();
   primal_start_artificial( &net );
   global_opt( );
   
