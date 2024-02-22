@@ -137,15 +137,17 @@ static inline void zsim_magic_op_end_copy(void)
 	return;
 }
 
-static void start_sim_notify_os(void) {
+static void set_sim_target(void) {
 	int fd, bytes_written;
 	fd = open("/proc/self/sim_target", O_WRONLY);
 	bytes_written = write(fd, "1", 1);
 	close(fd);
-	printf("%d bytes written\n", bytes_written);
+	printf("%d bytes written to sim_target\n", bytes_written);
+}
 
+static void start_sim(void) {
+	printf("issuing start sim magic op\n");
 	zsim_magic_op_start_sim();
-	printf("start sim magic op issued\n");
 }
 
 static void end_sim(void) {
