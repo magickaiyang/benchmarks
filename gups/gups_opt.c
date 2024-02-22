@@ -58,7 +58,7 @@ void sort_data (u64Int *source, u64Int *nomatch, u64Int *match, int number,
 		int *nnomatch, int *nmatch, int mask_shift);
 u64Int HPCC_starts(s64Int n);
 
-static inline void update_table(u64Int *data, u64Int *table, int number, int nlocalm1)
+static inline void update_table(u64Int *data, u64Int *table, int number, u64Int nlocalm1)
 {
 /* DEEP_UNROLL doesn't seem to improve anything at this time */
 /* Manual unrolling is a significant win if -Msafeptr is used -KDU */
@@ -133,7 +133,7 @@ static inline void update_table(u64Int *data, u64Int *table, int number, int nlo
 
   for (i = loop_total; i < number; i++) {
     u64Int datum = data[i];
-    int index = datum & nlocalm1;
+    u64Int index = datum & nlocalm1;
     table[index] ^= datum;
   }
 }
@@ -150,7 +150,7 @@ int main(int narg, char **arg)
 
   int me,nprocs;
   int j,k,iterate,niterate;
-  int nlocalm1,logtable,logtablelocal;
+  int logtable,logtablelocal;
   int logprocs,ipartner,ndata,nsend,nkeep,nkept,nrecv;
   int maxndata,maxnfinal,nexcess;
   int nbad;
@@ -160,7 +160,7 @@ int main(int narg, char **arg)
   u64Int *send1,*send2;
 #endif
   u64Int *recv[PITER][MAXLOGPROCS];
-  u64Int ran,procmask,nglobal,offset,nupdates,nlocal,i;
+  u64Int ran,procmask,nglobal,offset,nupdates,nlocal,nlocalm1,i;
   u64Int ilong,nexcess_long,nbad_long;
   MPI_Status status;
   MPI_Request request[PITER][MAXLOGPROCS];
