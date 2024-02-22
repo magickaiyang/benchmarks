@@ -1,0 +1,19 @@
+.read tpc-h-3.0.1/dbgen/dss.ddl
+.import tpc-h-3.0.1/dbgen/customer.tbl customer
+.import tpc-h-3.0.1/dbgen/lineitem.tbl lineitem
+.import tpc-h-3.0.1/dbgen/nation.tbl nation
+.import tpc-h-3.0.1/dbgen/orders.tbl orders
+.import tpc-h-3.0.1/dbgen/partsupp.tbl partsupp
+.import tpc-h-3.0.1/dbgen/part.tbl part
+.import tpc-h-3.0.1/dbgen/region.tbl region
+.import tpc-h-3.0.1/dbgen/supplier.tbl supplier
+.sim
+.read queries/2.sql
+.read queries/3.sql
+.read queries/11.sql
+.read queries/13.sql
+.read queries/16.sql
+.read queries/18.sql
+.read queries/19.sql
+.read queries/21.sql
+.quit
