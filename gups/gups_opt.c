@@ -146,7 +146,6 @@ int main(int narg, char **arg)
   close(fd);
   printf("%d bytes written\n", bytes_written);
 
-  zsim_magic_op_start_sim();
 
   int me,nprocs;
   int j,k,iterate,niterate;
@@ -263,6 +262,8 @@ int main(int narg, char **arg)
   MPI_Barrier(MPI_COMM_WORLD);
   t0 = -MPI_Wtime();
 
+  start_sim();
+ 
   for (iterate = 0; iterate < niterate; iterate++) {
     int iter_mod = iterate % PITER;
     for (i = 0; i < CHUNK; i++) {
