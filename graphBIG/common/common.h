@@ -22,8 +22,6 @@
 #include <tr1/unordered_map>
 #include <set>
 
-#include "../../include/magicops.h"
-
 #if defined TRAITS_LL
 #define TRAITS_TYPE adjlist_list_list_traits
 
@@ -246,7 +244,6 @@ class graphBIG
 public:
     static void print(void)
     {
-	start_sim_notify_os();
         std::cout<<"=================================================================="<<std::endl;
         std::cout<<"   ________                    .__   __________.___  ________ \n";
         std::cout<<"  /  _____/___________  ______ |  |__\\______   \\   |/  _____/ \n";

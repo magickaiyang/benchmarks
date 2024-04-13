@@ -77,6 +77,9 @@ void bc(graph_t& g, bool undirected,
     perf.open(perf_group);
     perf.start(perf_group);
 
+#ifdef SIM
+    SIM_BEGIN(true);
+#endif
 
     vertex_iterator vit;
     for (vit=g.vertices_begin(); vit!=g.vertices_end(); vit++) 
@@ -147,6 +150,9 @@ void bc(graph_t& g, bool undirected,
             }
         }
     }
+#ifdef SIM
+    SIM_END(true);
+#endif
 
     perf.stop(perf_group);
 
