@@ -2,4 +2,6 @@
 set -e
 set -x
 
-taskset -c 20 ./gups_opt 27 1000
+# around 32GB resident size
+# around 1.3s runtime on entropy
+./gups_opt 32 3000

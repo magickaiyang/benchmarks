@@ -98,6 +98,10 @@ size_t triangle_count(graph_t& g, gBenchPerf_event & perf, int perf_group)
 
     size_t ret=0;
 
+#ifdef SIM
+    SIM_BEGIN(true);
+#endif
+
     // run triangle count now
     for (vertex_iterator vit=g.vertices_begin(); vit!=g.vertices_end(); vit++) 
     {
@@ -124,6 +128,11 @@ size_t triangle_count(graph_t& g, gBenchPerf_event & perf, int perf_group)
     }
 
     ret /= 3;
+
+#ifdef SIM
+    SIM_END(true);
+#endif
+
 
     perf.stop(perf_group);
     return ret;

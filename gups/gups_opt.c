@@ -140,13 +140,6 @@ static inline void update_table(u64Int *data, u64Int *table, int number, u64Int 
 
 int main(int narg, char **arg)
 {
-  int fd, bytes_written;
-  fd = open("/proc/self/sim_target", O_WRONLY);
-  bytes_written = write(fd, "1", 1);
-  close(fd);
-  printf("%d bytes written\n", bytes_written);
-
-
   int me,nprocs;
   int j,k,iterate,niterate;
   int logtable,logtablelocal;
@@ -262,7 +255,8 @@ int main(int narg, char **arg)
   MPI_Barrier(MPI_COMM_WORLD);
   t0 = -MPI_Wtime();
 
-  start_sim();
+  printf("gups: start sim\n");
+  zsim_magic_op_start_sim();
  
   for (iterate = 0; iterate < niterate; iterate++) {
     int iter_mod = iterate % PITER;
@@ -345,6 +339,8 @@ int main(int narg, char **arg)
 #endif
   }
 
+  zsim_magic_op_end_sim();
+
   MPI_Barrier(MPI_COMM_WORLD);
   t0 += MPI_Wtime();
 
@@ -389,8 +385,6 @@ int main(int narg, char **arg)
   free(send1);
   free(send2);
 #endif
-
-  zsim_magic_op_end_sim();
 
   MPI_Finalize();
 }
