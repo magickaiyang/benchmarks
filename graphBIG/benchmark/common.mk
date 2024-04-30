@@ -1,6 +1,5 @@
 CXX_FLAGS+=-std=c++0x -Wall -Wno-deprecated
 INCLUDE+=-I${ROOT}/common -I${ROOT}/openG
-EXTRA_CXX_FLAGS+=-L${ROOT}/tools/lib
 
 LIBS=${EXTRA_LIBS}
 
@@ -81,7 +80,7 @@ all: ${ALL_TARGETS}
 	${CXX} -c ${CXX_FLAGS} $<
 
 ${TARGET}: ${OBJS}
-	${CXX} ${LINKER_OPTIONS} ${OBJS} -o $@ ${LIBS}
+	${CXX} ${LINKER_OPTIONS} ${OBJS} ../../../jemalloc/libjemalloc.a -o $@ ${LIBS}
 
 ${UNIT_TEST_TARGETS}:
 	${CXX} ${CXX_FLAGS} ${LIBS} -o $@ $@.cc $(LIBS)
