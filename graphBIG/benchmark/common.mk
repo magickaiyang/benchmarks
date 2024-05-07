@@ -80,7 +80,7 @@ all: ${ALL_TARGETS}
 	${CXX} -c ${CXX_FLAGS} $<
 
 ${TARGET}: ${OBJS}
-	${CXX} ${LINKER_OPTIONS} ${OBJS} ../../../jemalloc/libjemalloc.a -o $@ ${LIBS}
+	${CXX} ${LINKER_OPTIONS} ${OBJS} -o $@ ${LIBS}
 
 ${UNIT_TEST_TARGETS}:
 	${CXX} ${CXX_FLAGS} ${LIBS} -o $@ $@.cc $(LIBS)
