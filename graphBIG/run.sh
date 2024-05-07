@@ -2,4 +2,5 @@
 set -e
 set -x
 
-benchmark/bench_DFS/dfs --dataset dataset/big --separator " "
+script_dir=$(dirname $0)
+$script_dir/benchmark/bench_DFS/dfs --dataset $script_dir/dataset/big --separator " "
