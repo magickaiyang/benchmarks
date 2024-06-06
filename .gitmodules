@@ -4,3 +4,6 @@
 [submodule "xsbench"]
 	path = xsbench
 	url = git@github.com:CMU-CAOS/xsbench.git
+[submodule "dlrm-cpu"]
+	path = dlrm-cpu
+	url = git@github.com:CMU-CAOS/dlrm-cpu.git
