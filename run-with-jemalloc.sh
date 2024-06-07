@@ -2,5 +2,6 @@
 set -e
 set -x
 
-export LD_PRELOAD=`realpath jemalloc/libjemalloc.so.2`
-$@
+script_path=$(dirname $0)
+export LD_PRELOAD=`realpath $script_path/jemalloc/libjemalloc.so.2`
+"$@"
