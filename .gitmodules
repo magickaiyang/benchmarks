@@ -1,6 +1,3 @@
-[submodule "gapbs"]
-	path = gapbs
-	url = git@github.com:CMU-CAOS/gapbs.git
 [submodule "xsbench"]
 	path = xsbench
 	url = git@github.com:CMU-CAOS/xsbench.git
