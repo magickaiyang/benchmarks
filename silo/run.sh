@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# scale-factor controls memory usage. When it is 30, the peak memory usage is 119GB
+# scale-factor, runtime, and number of threads influence memory usage. Memory usage gradually increases.
+# The current settings has a peak memory usage of GB right before the benchmark ends.
 # runtime controls how long the benchmark runs.
 # num-threads controls the number of threads
 
@@ -8,9 +9,14 @@
 # When memory and cpu are from the same node, avg_per_core_throughput: 54424.3 ops/sec/core
 # A perf loss of -15%
 
-out-perf.masstree/benchmarks/dbtest \
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+rm -rf $SCRIPT_DIR/results/
+mkdir -p $SCRIPT_DIR/results/
+
+$SCRIPT_DIR/out-perf.masstree/benchmarks/dbtest \
     --verbose \
     --bench tpcc \
-    --num-threads 26 \
-    --scale-factor 30 \
-    --runtime 240 \
+    --num-threads 10 \
+    --scale-factor 29 \
+    --runtime 600 > $SCRIPT_DIR/results/silo.out 2>&1
