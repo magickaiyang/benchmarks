@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # scale-factor, runtime, and number of threads influence memory usage. Memory usage gradually increases.
-# The current settings has a peak memory usage of GB right before the benchmark ends.
+# The current settings has a peak memory usage of about 120 GB right before the benchmark ends.
 # runtime controls how long the benchmark runs.
 # num-threads controls the number of threads
 
